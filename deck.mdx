@@ -1,0 +1,184 @@
+import { Image } from "mdx-deck"
+
+## How to build a sample prototype app with terra-ui and create-react-app v1
+---
+# Terra UI is not compatible with CRA v1 out of the box
+---
+<Image src="./assets/sad.gif" />
+---
+## With a little custom config, we can get it work without ejecting
+---
+## First, let's run [create-react-app](https://github.com/facebook/create-react-app#quick-overview)
+
+```
+npx create-react-app terra-app
+cd terra-app
+```
+---
+## Then run `yarn start` and make sure everything is working after our initial install
+Your app should load up and be available at [http://localhost:3000/](http://localhost:3000/)
+---
+## Ok, hopefull the app started correctly, now we're going to stop the app.
+Press `Control + c`
+---
+## Now will open our new project in our code editor.
+---
+## We'll be using a project called [react-app-rewired](https://github.com/timarney/react-app-rewired) to supply custom webpack config
+---
+## Here we are going to swap react-scripts for react-app-rewired scripts
+```
+// old scripts
+"start": "react-scripts start",
+"build": "react-scripts build",
+"test": "react-scripts test --env=jsdom",
+```
+
+<br />
+
+```
+// new scripts
+"start": "react-app-rewired start",
+"build": "react-app-rewired build",
+"test": "react-app-rewired test --env=jsdom",
+```
+---
+## Next, we need to add some dev dependencies
+You can view the dev dependency updates here: [https://goo.gl/gqvBLJ](https://goo.gl/gqvBLJ)
+---
+## Now we'll want to run `yarn` to install the new devDependencies we added to the package.json file
+---
+# Next, we need to create a `config-overrides.js` file in our root directory.
+You can view the config-overrides here: [https://goo.gl/M88eh6](https://goo.gl/M88eh6)
+---
+## Now we need to update our `.gitignore` file so aggregated-translations don't get checked into version control
+---
+## Add the following to `.gitignore`
+```
+# generated translation files
+/src/aggregated-translations
+```
+---
+## Let's run `yarn start` and make sure everything is still working
+Your app should load up and be available at [http://localhost:3000/](http://localhost:3000/)
+---
+## Ok, hopefull the app started correctly, now we're going to stop the app.
+Press `Control + c`
+---
+## Similarly, we'll test and make sure the test script still works.
+Run `yarn test`
+---
+You should see 1 Jest test pass. If you see issues with the Jest test not running,
+it is likely an issue related to `watchman`.
+
+You can run `brew install watchman`
+---
+If tests still don't work, you can check out the troubleshooting section of create-react-app testing.
+[https://goo.gl/UtGboZ](https://goo.gl/UtGboZ)
+---
+## Now, we are going to add our first terra components to the app 🎉
+---
+Run `yarn add terra-base`
+
+then run `yarn add terra-button`
+---
+<Image src="./assets/yes.gif" />
+---
+## Next, we are going to import and use our button
+---
+Open `src/App.js` and the button import.
+```
+import Button from 'terra-button';
+```
+---
+You can then use the terra button in your app like so:
+```
+<Button variant="emphasis" text="Hello Cerner" />
+```
+---
+## Setting up terra-base
+The [terra-base componet](https://engineering.cerner.com/terra-ui/#/components/terra-base/base/base) is recommended to be used at the base of you React application.
+
+It set's up [react-intl's](https://github.com/yahoo/react-intl) `<IntlProvider />` component and manage's code-splitting translations files per locale.
+---
+Import `terra-base` in `src/App.js`
+```
+import React, { Component } from 'react';
+import Base from 'terra-base';
+import Button from 'terra-button';
+```
+---
+Now in `src/App.js`, replace
+```
+<div className="App">
+```
+with
+
+```
+<Base className="App" locale="en">
+```
+---
+Be sure to also update the closing
+```
+</div>
+```
+to
+```
+</Base>
+```
+---
+## Now we can use components that provide their own translations for our [supported locales](https://github.com/cerner/terra-toolkit/blob/master/scripts/aggregate-translations/i18nSupportedLocales.js)
+🇺🇸🇸🇪🇧🇪🇩🇪🇫🇷🇸🇦🇦🇪🇲🇽🇪🇸🇧🇷
+---
+Run `yarn add terra-alert`
+---
+Import `terra-alert` in `src/App.js`
+```
+import Alert from 'terra-alert';
+```
+---
+Now you can use the alert in `src/App.js`
+```
+<Alert type="success">Using terra + create-react-app</Alert>
+```
+---
+Note that if you change the locale on `<Base />` to one of the other [supported locales](https://github.com/cerner/terra-toolkit/blob/master/scripts/aggregate-translations/i18nSupportedLocales.js), you'll see the word `Success` in the alert update for the new locale.
+---
+## Some additional minor tweaks
+---
+I'd recommend removing `src/index.css`. It's font-family overrides the terra font-family provided in terra-base.
+The other styles in `src/index.css` are also provided in terra-base, so this file isn't really needed.
+---
+You'll also likely want to add the following CSS to your `App.css` file.
+
+```css
+#root {
+  height: 100%;
+}
+```
+---
+## Demo App Project
+[https://github.cerner.com/BJ031910/create-react-app-terra](https://github.cerner.com/BJ031910/create-react-app-terra)
+
+This is a copy
+of the steps we went through today. Feel free to just clone this repo to get started if you missed the steps in the demo.
+---
+## You can view the diff from initial output from create-react-app to our changes here.
+[https://goo.gl/NRFBah](https://goo.gl/NRFBah)
+---
+## Some notes on usage
+---
+This project is provided as-is. Use it as wish. It can be great for building prototypes, getting familiar with terra, building reduced test-cases.
+From here, you can create whatever you want!
+---
+## HealtheIntent and Orion have established patterns for builds React apps with Rails which should be used for building apps instead of using this.
+---
+## HealtheIntent Apps
+* Check out the [HealtheIntent app-sdk](https://github.cerner.com/healtheintent/app-sdk) if you are building an app in HealtheIntent.
+---
+## Orion Apps and Engines
+* Check out the [orion-app_starter](https://github.cerner.com/orion/orion-app_starter)
+* Check out the [orion-generator](https://github.cerner.com/ion-server-core/ion-jenkins#generators)
+---
+# The end
+* Slides: [https://goo.gl/Urewrp](https://goo.gl/Urewrp)
+* Twitter: [@bjankord](https://twitter.com/bjankord)
